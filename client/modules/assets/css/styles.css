@@ -1,0 +1,24 @@
+/************/
+/*COMMON*/
+/************/
+
+body {
+    font-family: source-sans-pro, sans-serif;
+    font-size: 15px;
+    background-color: #fefefe;
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+.error {
+    border: 1px solid #FF0000;
+}
+
+#content {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.bold {
+    font-weight: bold;
+}

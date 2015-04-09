@@ -45,8 +45,8 @@ def userSignUp(request):
 	
 	data = json.loads(request.body)
 	username = data['username']
-	first_name = data['first_name']
-	last_name = data.get('last_name', '')
+	first_name = data['firstName']
+	last_name = data.get('lastName', '')
 	email = data['email']
 	password = data['password']
 
@@ -72,13 +72,13 @@ def userGetInfo(request):
 		info["firstName"] = "Anon"
 		info["lastName"] = ""
 		info["email"] = ""
-		info["role"] = 0
 	else:
 		info["status"] = 1
 		info["username"] = request.user.username
 		info["firstName"] = request.user.first_name
 		info["lastName"] = request.user.last_name
 		info["email"] = request.user.email
-		info["role"] = 1
+		if request.session.get('match'):
+			info['match'] = request.session['match']
 	info["msg"] = "getInfo"
 	return HttpResponse(json.dumps(info), content_type="application/json")

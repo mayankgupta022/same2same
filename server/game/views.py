@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from game.models import *
 import json
-from common.utils import model_to_json, collection_to_json
 # Create your views here.
 
 
@@ -46,7 +45,6 @@ def waiting(request):
 		else:
 			info["msg"] = "WAITING"
 		info["status"] = 0
-		info["calender"] = model_to_json(calender)
 	except Exception as e:
 		info["status"] = 1
 		info["msg"] = e.message + str(type(e))
@@ -78,6 +76,10 @@ def getQuestion(request):
 				match.status = 2
 				match.save()
 				info["msg"] = "WON"
+				del request.session['question']
+				del request.session['response']
+				del request.session['match']
+				#destroy session variables except user's credentials
 
 		request.session['response'] = 0
 		info["status"] = 0
