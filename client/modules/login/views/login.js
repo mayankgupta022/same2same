@@ -47,25 +47,22 @@ define(function (require) {
                     username: username,
                     password: password
                     }, {
-                        success: function (data) {
-                            if (data.attributes.status === 1 && data.attributes.msg === 'invalid')
-                                $('#loginMsg').html('Username and password do not match!');
-                            if (data.attributes.status === 1 && data.attributes.msg === 'deactivated')
-                                $('#loginMsg').html('Your account has been deactivated!');
-                            else
-                                document.router.navigate("blank", {trigger: true});
-                        },
-                        error: function (data) {
-                            $('#loginMsg').html('Login failed');
-                        }
+                    success: function (data) {
+                        if (data.attributes.status === 1 && data.attributes.msg === 'invalid')
+                            $('#loginMsg').html('Username and password do not match!');
+                        if (data.attributes.status === 1 && data.attributes.msg === 'deactivated')
+                            $('#loginMsg').html('Your account has been deactivated!');
+                        else
+                            document.router.navigate("blank", {trigger: true});
+                    },
+                    error: function (data) {
+                        $('#loginMsg').html('Login failed');
+                    }
                 });
             }
         },
 
-        render: function (menuView) {
-            if (menuView) {
-                menuView.updateMenu(model.MenuData);
-            }
+        render: function () {
             this.$el.html(template());
             return this;
         }

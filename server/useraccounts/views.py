@@ -34,6 +34,7 @@ def userLogin(request):
 def userLogout(request):
 	info = dict()
 	logout(request)
+	request.session.flush()
 	info["status"] = 0
 	info["msg"] = "logout"
 	return HttpResponse(json.dumps(info), content_type="application/json")

@@ -101,6 +101,8 @@ define(function (require) {
         updateCurrentView: function(newView) {
             //COMPLETELY UNBIND THE VIEW
             if(this.currentView) {
+                if(typeof this.currentView.close === "function")
+                    this.currentView.close();
                 this.currentView.undelegateEvents();
                 $(this.currentView.el).removeData().unbind(); 
                 //Remove currentView from DOM
@@ -147,6 +149,32 @@ define(function (require) {
 /* GAME */
 /**********/
 
+        newGame: function () {
+            var self = this;
+            require(["newGame/views/newGame"], function (NewGameView) {
+                var newGameView = new NewGameView();
+                self.updateCurrentView(newGameView);
+                $(newGameView.render().el).appendTo($content);
+            });
+        },
+
+        resultGame: function () {
+            var self = this;
+            require(["resultGame/views/resultGame"], function (ResultGameView) {
+                var resultGameView = new ResultGameView();
+                self.updateCurrentView(resultGameView);
+                $(resultGameView.render().el).appendTo($content);
+            });
+        },
+
+        game: function () {
+            var self = this;
+            require(["game/views/game"], function (GameView) {
+                var gameView = new GameView();
+                self.updateCurrentView(gameView);
+                $(gameView.render().el).appendTo($content);
+            });
+        },
 
     });
 
