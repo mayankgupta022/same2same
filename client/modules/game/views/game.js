@@ -3,32 +3,77 @@ define(function (require) {
     "use strict";
 
     var Backbone = require('backbone'),
-        model    = require('newGame/models/model'),
-        tpl      = require('text!newGame/tpl/newGame.html'),
+        model    = require('game/models/model'),
+        tpl      = require('text!game/tpl/game.html'),
+        timer,
 
         template = _.template(tpl);
 
     return Backbone.View.extend({
 
         events: {
-            "click #submit" : "newGame"
+            "click #submit" : "response"
         },
 
-        newGame: function() {
-            var newGame = new model.NewGame();
-            newGame.fetch({
+        getQuestion: function() {
+            var self = this;
+            var question = new model.Question();
+            question.fetch({
                     success: function (data) {
-                            document.router.navigate("game", {trigger: true});
+                        if (data.attributes.msg == "WON")
+                            document.router.navigate("result", {trigger: true});
+                        console.log(data.attributes.question);
+                        self.$el.html(template(data.attributes.question));
                     },
                     error: function (data) {
-                        $('#newGameMsg').html('Failed to start a new game. Please try again after some time.');
+                        console.log(data);
                     }
+                });
+        },
+
+        response: function() {
+            var self = this;
+            var response = new model.Response();
+            response.save({
+                    response : $('input[radio]').val()
+                }, {
+                success: function (data) {
+                    self.validate();
+                },
+                error: function (data) {
+                    $('#responseMsg').html('Failed to start a new response. Please try again after some time.');
+                }
             });
         },
 
+        validate: function() {
+            var self = this;
+            var validate = new model.Validate();
+            this.timer = setInterval(function () {
+                validate.fetch({
+                    success: function (data) {
+                        if (data.attributes.msg == "NEXT")
+                            self.render();
+                        else if (data.attributes.msg == 'LOST')
+                            $('#responseMsg').html('Responses do not match. Either change your response or wait for other player');
+                        else
+                            $('#responseMsg').html('Waiting for other player to respond');
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            }, 5000);
+
+        },
+
         render: function () {
-            this.$el.html(template());
+            this.getQuestion();
             return this;
+        },
+
+        close: function () {
+            clearInterval(this.timer);
         }
 
     });

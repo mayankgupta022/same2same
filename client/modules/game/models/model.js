@@ -4,13 +4,22 @@ define(function (require) {
 
     var Backbone = require('backbone'),
         
-        NewGame = Backbone.Model.extend({
-            urlRoot : document.serverURL + 'game/new/'
+        Question = Backbone.Model.extend({
+            urlRoot : document.serverURL + 'game/getQuestion/'
+            }),
+
+        Response = Backbone.Model.extend({
+            urlRoot : document.serverURL + 'game/response/'
+            }),
+
+        Validate = Backbone.Model.extend({
+            urlRoot : document.serverURL + 'game/validate/'
             });
 
     return {
-        NewGame: NewGame
+        Question: Question,
+        Response: Response,
+        Validate: Validate
     };
-
 
 });

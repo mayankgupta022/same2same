@@ -1,7 +1,11 @@
-<div class="newGameModule">	
+<div class="gameModule">	
 	<form role="form">
-		<div id="newGameMsg">&nbsp;</div>
-		<br />	
-		<button type="submit" class="btn btn-warning" id="submit">Start New Game</button>
+		<div><%= question_image %></div>
+		<input type="radio" name="answer" value="1"/><%= answer_image1 %>
+		<input type="radio" name="answer" value="2"/><%= answer_image2 %>
+		<input type="radio" name="answer" value="3"/><%= answer_image3 %>
+		<div id="responseMsg">&nbsp;</div>
+		<br />
+		<button type="submit" class="btn btn-warning" id="submit">Submit</button>
 	</form>
 </div>

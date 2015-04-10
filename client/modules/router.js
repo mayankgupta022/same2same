@@ -101,6 +101,8 @@ define(function (require) {
         updateCurrentView: function(newView) {
             //COMPLETELY UNBIND THE VIEW
             if(this.currentView) {
+                if(typeof this.currentView.close === "function")
+                    this.currentView.close();
                 this.currentView.undelegateEvents();
                 $(this.currentView.el).removeData().unbind(); 
                 //Remove currentView from DOM

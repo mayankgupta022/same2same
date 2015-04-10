@@ -6,10 +6,15 @@ define(function (require) {
         
         NewGame = Backbone.Model.extend({
             urlRoot : document.serverURL + 'game/new/'
+            }),
+
+        Waiting = Backbone.Model.extend({
+            urlRoot : document.serverURL + 'game/waiting/'
             });
 
     return {
-        NewGame: NewGame
+        NewGame: NewGame,
+        Waiting: Waiting
     };
 
 

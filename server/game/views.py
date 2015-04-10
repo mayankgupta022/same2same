@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from common.utils import *
 from game.models import *
 import json
 # Create your views here.
@@ -11,19 +12,21 @@ def newMatch(request):
 	info = dict()
 
 	try:
-		availableMatch = MatchInfo.objects.filter(status = 0, player1__nt = request.user.username)[0]
-		if not availableMatch:
+		availableMatches = MatchInfo.objects.filter(status = 0).exclude(player1 = request.user.username)
+		if not availableMatches:
 			game = Game.objects.order_by('?')[0]
-			availableMatch = MathInfo.objects.create(
+			availableMatch = MatchInfo.objects.create(
 					game = game,
 					player1 = request.user.username
 				)
 		else:
-			availableMatch.player2 = request.user.username
+			availableMatch = availableMatches[0]
+			availableMatches.player2 = request.user.username
 			availableMatch.status = 1
 			availableMatch.save()
 		info["status"] = 0
 		request.session['match'] = availableMatch.pk
+		request.session['question'] = 0	
 		info["match"] = availableMatch.pk
 	except Exception as e:
 		info["status"] = 1
@@ -39,9 +42,9 @@ def waiting(request):
 	try:
 		match = MatchInfo.objects.filter(pk = request.session['match'])[0]
 		if match.status == 1:
-			request.session['question'] = getNextQuestion(request.session['match'],request.session['question'])			
 			info["msg"] = "READY"
 			request.session['response'] = 0
+			request.session['next'] = 1
 		else:
 			info["msg"] = "WAITING"
 		info["status"] = 0
@@ -63,12 +66,16 @@ def getQuestion(request):
 			info["msg"] = "WON"
 		else:
 			game = match.game
-			next_question = Question.objects.filter(game = game, pk__gt = request.session['question']).order_by(pk)
+			if request.session['next']:
+				next_question = Question.objects.filter(game = game, pk__gt = request.session['question'])
+				request.session['next'] = 0
+			else:
+				next_question = Question.objects.filter(game = game, pk = request.session['question'])
 			if next_question:
 				request.session['question']=next_question[0].pk
 				match.curr_question = next_question[0].pk
 				match.save()
-				info["question"] = next_question
+				info["question"] = model_to_json(next_question[0])
 				info["msg"] = "NEXT"
 			else:
 				request.session['question']=-1
@@ -79,7 +86,7 @@ def getQuestion(request):
 				del request.session['question']
 				del request.session['response']
 				del request.session['match']
-				#destroy session variables except user's credentials
+				del request.session['next']
 
 		request.session['response'] = 0
 		info["status"] = 0
@@ -133,6 +140,7 @@ def validate(request):
 			if response.player1_response and response.player2_response:
 				if response.player1_response == response.player2_response:
 					info["msg"] = "NEXT"
+					request.session['next'] = 1
 				else:
 					info["msg"] = "LOST"
 			else:
