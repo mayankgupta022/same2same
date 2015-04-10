@@ -3,13 +3,13 @@ define(function (require) {
     "use strict";
 
     var Backbone = require('backbone'),
-
-        Logout = Backbone.Model.extend({
-            urlRoot : document.serverURL + 'user/logout/'
+        
+        NewGame = Backbone.Model.extend({
+            urlRoot : document.serverURL + 'game/new/'
             });
 
     return {
-        Logout: Logout
+        NewGame: NewGame
     };
 
 

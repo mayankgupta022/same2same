@@ -147,6 +147,32 @@ define(function (require) {
 /* GAME */
 /**********/
 
+        newGame: function () {
+            var self = this;
+            require(["newGame/views/newGame"], function (NewGameView) {
+                var newGameView = new NewGameView();
+                self.updateCurrentView(newGameView);
+                $(newGameView.render().el).appendTo($content);
+            });
+        },
+
+        resultGame: function () {
+            var self = this;
+            require(["resultGame/views/resultGame"], function (ResultGameView) {
+                var resultGameView = new ResultGameView();
+                self.updateCurrentView(resultGameView);
+                $(resultGameView.render().el).appendTo($content);
+            });
+        },
+
+        game: function () {
+            var self = this;
+            require(["game/views/game"], function (GameView) {
+                var gameView = new GameView();
+                self.updateCurrentView(gameView);
+                $(gameView.render().el).appendTo($content);
+            });
+        },
 
     });
 

@@ -104,10 +104,7 @@ define(function (require) {
             }
         },
 
-        render: function (menuView) {
-            if (menuView) {
-                menuView.updateMenu(model.MenuData);
-            }
+        render: function () {
             this.$el.html(template());
             return this;
         }
