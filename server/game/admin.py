@@ -23,5 +23,5 @@ class MatchInfoAdmin(admin.ModelAdmin):
 
 @admin.register(MatchDetails)
 class MatchDetailsAdmin(admin.ModelAdmin):
-	list_display = ('match', 'question', 'player1_response', 'player2_response')
+	list_display = ('match', 'question', 'player1_response', 'player2_response', 'updated')
 	search_fields = ('match',)

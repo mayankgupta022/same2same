@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from common.utils import *
 from game.models import *
 import json
+from datetime import datetime, timedelta
+from django.utils import timezone
 # Create your views here.
 
 
@@ -23,11 +25,13 @@ def newMatch(request):
 						game = game,
 						player1 = request.user.username
 					)
+				request.session['player'] = 1
 			else:
 				availableMatch = availableMatches[0]
 				availableMatch.player2 = request.user.username
 				availableMatch.status = 1
 				availableMatch.save()
+				request.session['player'] = 2
 			info["status"] = 0
 			request.session['match'] = availableMatch.pk
 			request.session['question'] = 0	
@@ -129,6 +133,7 @@ def response(request):
 			response.player1_response = answer
 		else:
 			response.player2_response = answer
+		response.player = request.session['player']
 		response.save()
 
 		request.session['response'] = 1
@@ -155,6 +160,8 @@ def validate(request):
 					request.session['next'] = 1
 				else:
 					info["msg"] = "LOST"
+			elif response.updated + timedelta(seconds = 100) < timezone.now():
+				info["msg"] = "LEFT"
 			else:
 				info["msg"] = "WAITING"
 		info["status"] = 0
@@ -164,4 +171,4 @@ def validate(request):
 
 	return HttpResponse(json.dumps(info), content_type="application/json")
 
-#what if one person logs out
+#if one person logs out, other person keeps on waiting

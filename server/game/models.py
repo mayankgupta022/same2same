@@ -37,6 +37,7 @@ class MatchDetails(models.Model):
 	question = models.ForeignKey(Question, on_delete=models.CASCADE)
 	player1_response = models.IntegerField(max_length = 1, default = 0)
 	player2_response = models.IntegerField(max_length = 1, default = 0)
+	updated = models.DateTimeField(auto_now = True)
 
 	class Meta:
          verbose_name_plural = "Matches Details"

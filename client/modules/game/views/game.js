@@ -20,7 +20,7 @@ define(function (require) {
             var question = new model.Question();
             question.fetch({
                     success: function (data) {
-                        if (data.attributes.msg == "WON")                            
+                        if (data.attributes.msg == "WON")
                             document.router.navigate("result", {trigger: true});
                         else
                         {
@@ -63,6 +63,10 @@ define(function (require) {
                         }
                         else if (data.attributes.msg == 'LOST')
                             $('#responseMsg').html('Responses do not match. Either change your response or wait for other player');
+                        else if (data.attributes.msg == "LEFT")
+                        {
+                            $('#responseMsg').html('It seems that other player has left the game.');
+                        }
                     },
                     error: function (data) {
                         console.log(data);
