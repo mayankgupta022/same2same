@@ -6,7 +6,7 @@ define(function (require) {
         server_ip = 'localhost:84';
 
     document.serverURL = 'http://' + server_ip + '/';
-    document.mediaURL = 'http://' + server_ip + '/';
+    document.mediaURL = 'http://' + '127.0.0.1:8000' + '/media/';
 
     var originalSync = Backbone.sync;
 
