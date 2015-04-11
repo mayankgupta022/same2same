@@ -8,8 +8,13 @@ define(function (require) {
     return Backbone.View.extend({
         logout: function() {
             var logout = new model.Logout();
-            logout.save();
-            document.router.navigate("blank", {trigger: true});
+            logout.save({},{
+                success: function (data) {
+                    document.router.navigate("blank", {trigger: true});
+                },
+                error: function (data) {
+                }
+            });
         },
 
         render: function () {

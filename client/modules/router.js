@@ -55,6 +55,13 @@ define(function (require) {
 
         home: function () {
             var self = this;
+
+            document.role = null;
+            document.firstName = null;
+            document.lastName = null;
+            document.email = null;
+            document.match = null;
+            
             var getInfo = new model.GetInfo();
             getInfo.fetch({
                         success: function (data) {

@@ -12,7 +12,7 @@ define(function (require) {
     return Backbone.View.extend({
 
         events: {
-            "click #submit" : "response"
+            "click .submit" : "response"
         },
 
         getQuestion: function() {
@@ -20,10 +20,13 @@ define(function (require) {
             var question = new model.Question();
             question.fetch({
                     success: function (data) {
-                        if (data.attributes.msg == "WON")
+                        if (data.attributes.msg == "WON")                            
                             document.router.navigate("result", {trigger: true});
-                        console.log(data.attributes.question);
-                        self.$el.html(template(data.attributes.question));
+                        else
+                        {
+                            console.log(data.attributes.question);
+                            self.$el.html(template(data.attributes.question));
+                        }
                     },
                     error: function (data) {
                         console.log(data);
@@ -31,13 +34,15 @@ define(function (require) {
                 });
         },
 
-        response: function() {
+        response: function(e) {
             var self = this;
             var response = new model.Response();
+            console.log(e.target.id);
             response.save({
-                    response : $('input[radio]').val()
+                    response : parseInt(e.target.id)
                 }, {
                 success: function (data) {
+                    $('#responseMsg').html('Waiting for other player to respond');
                     self.validate();
                 },
                 error: function (data) {
@@ -53,11 +58,11 @@ define(function (require) {
                 validate.fetch({
                     success: function (data) {
                         if (data.attributes.msg == "NEXT")
+                        {
                             self.render();
+                        }
                         else if (data.attributes.msg == 'LOST')
                             $('#responseMsg').html('Responses do not match. Either change your response or wait for other player');
-                        else
-                            $('#responseMsg').html('Waiting for other player to respond');
                     },
                     error: function (data) {
                         console.log(data);
@@ -68,12 +73,14 @@ define(function (require) {
         },
 
         render: function () {
+            this.close();
             this.getQuestion();
             return this;
         },
 
         close: function () {
-            clearInterval(this.timer);
+            if(this.timer)
+                clearInterval(this.timer);
         }
 
     });

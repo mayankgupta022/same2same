@@ -12,22 +12,26 @@ def newMatch(request):
 	info = dict()
 
 	try:
-		availableMatches = MatchInfo.objects.filter(status = 0).exclude(player1 = request.user.username)
-		if not availableMatches:
-			game = Game.objects.order_by('?')[0]
-			availableMatch = MatchInfo.objects.create(
-					game = game,
-					player1 = request.user.username
-				)
+		if request.session.get('match'):
+			info["match"] = request.session['match']
+			info["status"] = 0
 		else:
-			availableMatch = availableMatches[0]
-			availableMatches.player2 = request.user.username
-			availableMatch.status = 1
-			availableMatch.save()
-		info["status"] = 0
-		request.session['match'] = availableMatch.pk
-		request.session['question'] = 0	
-		info["match"] = availableMatch.pk
+			availableMatches = MatchInfo.objects.filter(status = 0).exclude(player1 = request.user.username)
+			if not availableMatches:
+				game = Game.objects.order_by('?')[0]
+				availableMatch = MatchInfo.objects.create(
+						game = game,
+						player1 = request.user.username
+					)
+			else:
+				availableMatch = availableMatches[0]
+				availableMatch.player2 = request.user.username
+				availableMatch.status = 1
+				availableMatch.save()
+			info["status"] = 0
+			request.session['match'] = availableMatch.pk
+			request.session['question'] = 0	
+			info["match"] = availableMatch.pk
 	except Exception as e:
 		info["status"] = 1
 		info["msg"] = e.message + str(type(e))
@@ -62,9 +66,8 @@ def getQuestion(request):
 	try:
 
 		match = MatchInfo.objects.filter(pk = request.session['match'])[0]
-		if match.status == 2:
-			info["msg"] = "WON"
-		else:
+
+		if match.status != 2:
 			game = match.game
 			if request.session['next']:
 				next_question = Question.objects.filter(game = game, pk__gt = request.session['question'])
@@ -82,13 +85,16 @@ def getQuestion(request):
 				match.curr_question = -1
 				match.status = 2
 				match.save()
-				info["msg"] = "WON"
-				del request.session['question']
-				del request.session['response']
-				del request.session['match']
-				del request.session['next']
 
 		request.session['response'] = 0
+
+		if match.status == 2:
+			info["msg"] = "WON"
+			del request.session['question']
+			del request.session['response']
+			del request.session['match']
+			del request.session['next']
+
 		info["status"] = 0
 	except Exception as e:
 		info["status"] = 1
@@ -105,12 +111,18 @@ def response(request):
 		data = json.loads(request.body)
 		answer = data['response']
 
-		match = MatchInfo.objects.filter(pk = request.session['match'])
-		response = MatchDetails.objects.filter(match = match, question = request.session['question'])
-		if not response:
+		match = MatchInfo.objects.filter(pk = request.session['match'])[0]
+		responses = MatchDetails.objects.filter(match = match, question = request.session['question'])
+		question = Question.objects.filter(game = match.game, pk = request.session['question'])[0]
+		info["match"] = match.pk
+		info["question"] = question.pk
+
+		if responses:
+			response = responses[0]
+		else:
 			response = MatchDetails.objects.create(
 				match = match,
-				question = request.session['question']
+				question = question
 				)
 
 		if match.player1 == request.user.username:
@@ -135,8 +147,8 @@ def validate(request):
 
 	try:
 		if request.session['response']:
-			match = MatchInfo.objects.filter(pk = request.session['match'])
-			response = MatchDetails.objects.filter(match = match, question = request.session['question'])
+			match = MatchInfo.objects.filter(pk = request.session['match'])[0]
+			response = MatchDetails.objects.filter(match = match, question = request.session['question'])[0]
 			if response.player1_response and response.player2_response:
 				if response.player1_response == response.player2_response:
 					info["msg"] = "NEXT"
@@ -151,3 +163,5 @@ def validate(request):
 		info["msg"] = e.message + str(type(e))
 
 	return HttpResponse(json.dumps(info), content_type="application/json")
+
+#what if one person logs out

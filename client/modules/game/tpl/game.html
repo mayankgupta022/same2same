@@ -1,11 +1,18 @@
 <div class="gameModule">	
-	<form role="form">
-		<div><%= question_image %></div>
-		<input type="radio" name="answer" value="1"/><%= answer_image1 %>
-		<input type="radio" name="answer" value="2"/><%= answer_image2 %>
-		<input type="radio" name="answer" value="3"/><%= answer_image3 %>
-		<div id="responseMsg">&nbsp;</div>
-		<br />
-		<button type="submit" class="btn btn-warning" id="submit">Submit</button>
-	</form>
+	<div class="row">
+		<div class="col-xs-5"></div>
+		<img class="col-xs-2" src="<%= question_image %>" />
+		<div class="col-xs-5"></div>
+	</div>
+	<br />
+	<div class="row">
+		<div class="col-xs-2"></div>
+		<img class="submit col-xs-2" id="1" src="<%= answer_image1 %>" />
+		<div class="col-xs-1"></div>
+		<img class="submit col-xs-2" id="2" src="<%= answer_image2 %>" />
+		<div class="col-xs-1"></div>
+		<img class="submit col-xs-2" id="3" src="<%= answer_image3 %>" />
+		<div class="col-xs-2"></div>
+	</div>
+	<div class="row" id="responseMsg">&nbsp;</div>
 </div>
